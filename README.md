@@ -28,4 +28,9 @@ scheduler ---> requestqueue(request chan) --->activerequester
  V                                            |   V
  workerqueue(worker chan) --------------- activeworker
 
+ ---(requests)-------------engine--------->data(items)
+ |                           ^
+ V                           |(requests, items)
+ scheduler---(requests)-> worker(queue)
+```
 
