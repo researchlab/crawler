@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"time"
 
 	"golang.org/x/net/html/charset"
 	"golang.org/x/text/encoding"
@@ -15,8 +16,15 @@ import (
 
 //Fetch 对内容页面进行爬取及转码操作
 //返回转码后的内容
+
+var rateLimiter = time.Tick(100 * time.Millisecond)
+var client = http.DefaultClient
+
 func Fetch(url string) ([]byte, error) {
-	resp, err := http.Get(url)
+	<-rateLimiter
+	req, _ := http.NewRequest("GET", url, nil)
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36")
+	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -24,7 +32,7 @@ func Fetch(url string) ([]byte, error) {
 
 	if resp.StatusCode != http.StatusOK {
 		return nil,
-			fmt.Errorf("wrrong status code: %d", resp.StatusCode)
+			fmt.Errorf("wrong status code: %d", resp.StatusCode)
 	}
 	bodyReader := bufio.NewReader(resp.Body)
 	e := determineEncoding(bodyReader)
