@@ -15,7 +15,9 @@ func (p *QueuedScheduler) WorkerReady(w chan engine.Request) {
 	p.workerChan <- w
 }
 
-func (p *QueuedScheduler) ConfigureMasterWorkerChan(chan engine.Request) {}
+func (p *QueuedScheduler) WorkerChan() chan engine.Request {
+	return make(chan engine.Request)
+}
 
 func (p *QueuedScheduler) Run() {
 	p.workerChan = make(chan chan engine.Request)
