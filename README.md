@@ -5,9 +5,9 @@
 ```shell
 seed --(requests)--------------> engine
                                  |
-												         V
+                                 V
 fetcher(fetch the page) <--- task queue(requests) for len(task queue) <=0 {quit}
   |                              ^
-	V                              |
+  V                              |
 parser--(new requests)-----------^
 ```
