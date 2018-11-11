@@ -3,7 +3,11 @@
 - support crawling user data from the given website.
 
 ```shell
-1.seed --(requests)--> engine ---> task queue(requests) ---> fetcher(fetch the page)--->parser(parse the page content)
-
-2.parser--(new requests)--> task queue(requests)
+seed --(requests)--------------> engine
+                                 |
+												         V
+fetcher(fetch the page) <--- task queue(requests) for len(task queue) <=0 {quit}
+  |                              ^
+	V                              |
+parser--(new requests)-----------^
 ```
