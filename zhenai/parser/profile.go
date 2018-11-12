@@ -20,9 +20,11 @@ var (
 	educationRe = regexp.MustCompile(`educationString\":\"([^\"]+)\"`)
 	hokouRe     = regexp.MustCompile(`<div class="m-btn pink" data-v-ff544c08>籍贯:([^<]+)</div>`)
 	xinzuoRe    = regexp.MustCompile(`<div class="m-btn purple" data-v-ff544c08>((魔羯座|水瓶座|双鱼座|牡羊座|金牛座|双子座|巨蟹座|狮子座|天蝎座|射手座)\([\d]+.[\d]+-[\d]+.[\d]+\))</div>`)
+
+	idUrlRe = regexp.MustCompile(`http://album.zhenai.com/u/([\d]+)`)
 )
 
-func ParseProfile(contents []byte, name string) engine.ParseResult {
+func ParseProfile(contents []byte, url, name string) engine.ParseResult {
 	profile := model.Profile{}
 
 	//	profile.Name = extractString(contents, nameRe)
@@ -50,7 +52,14 @@ func ParseProfile(contents []byte, name string) engine.ParseResult {
 	profile.Xinzuo = extractString(contents, xinzuoRe)
 
 	result := engine.ParseResult{
-		Items: []interface{}{profile},
+		Items: []engine.Item{
+			engine.Item{
+				Url:     url,
+				Type:    "zhenai",
+				Id:      extractString([]byte(url), idUrlRe),
+				Payload: profile,
+			},
+		},
 	}
 	return result
 }

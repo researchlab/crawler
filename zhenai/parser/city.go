@@ -12,19 +12,17 @@ var (
 )
 
 func ParseCity(
-	contents []byte) engine.ParseResult {
+	contents []byte, url string) engine.ParseResult {
 	matches := profileRe.FindAllSubmatch(contents, -1)
 	result := engine.ParseResult{}
 
 	for _, m := range matches {
-		name := string(m[2])
 		//		result.Items = append(result.Items, "User "+name)
+		url := string(m[1])
 		result.Requests = append(
 			result.Requests, engine.Request{
-				Url: string(m[1]),
-				ParserFunc: func(c []byte) engine.ParseResult {
-					return ParseProfile(c, name)
-				},
+				Url:        url,
+				ParserFunc: ProfileParser(string(m[2])),
 			})
 	}
 
@@ -37,4 +35,10 @@ func ParseCity(
 			})
 	}
 	return result
+}
+
+func ProfileParser(name string) engine.ParserFunc {
+	return func(c []byte, url string) engine.ParseResult {
+		return ParseProfile(c, url, name)
+	}
 }
