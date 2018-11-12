@@ -17,7 +17,7 @@ import (
 //Fetch 对内容页面进行爬取及转码操作
 //返回转码后的内容
 
-var rateLimiter = time.Tick(100 * time.Millisecond)
+var rateLimiter = time.Tick(10 * time.Millisecond)
 var client = http.DefaultClient
 
 func Fetch(url string) ([]byte, error) {
