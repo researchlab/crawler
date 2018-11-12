@@ -36,4 +36,4 @@ scheduler ---> requestqueue(request chan) --->activerequester
 
 截图
 
-![](resouces/pics/searchresult.png)
+![](resources/pics/searchresult.png)
