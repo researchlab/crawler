@@ -1,14 +1,9 @@
 package engine
 
-import (
-	"log"
-
-	"github.com/researchlab/crawler/fetcher"
-)
-
 type ConcurrentEngine struct {
 	Scheduler   Scheduler
 	WorkerCount int
+	ItemChan    chan Item
 }
 
 type Scheduler interface {
@@ -31,16 +26,21 @@ func (p *ConcurrentEngine) Run(seeds ...Request) {
 	}
 
 	for _, r := range seeds {
+		if isDuplicate(r.Url) {
+			continue
+		}
 		p.Scheduler.Submit(r)
 	}
-	count := 0
 	for {
 		result := <-out
 		for _, item := range result.Items {
-			log.Printf("Got item#%d: %v\n", count, item)
-			count++
+			//log.Printf("Got item: %v\n", item)
+			go func() { p.ItemChan <- item }()
 		}
 		for _, request := range result.Requests {
+			if isDuplicate(request.Url) {
+				continue
+			}
 			p.Scheduler.Submit(request)
 		}
 	}
@@ -60,12 +60,12 @@ func createWorker(in chan Request, out chan ParseResult, ready ReadyNotifier) {
 	}()
 }
 
-func worker(r Request) (ParseResult, error) {
-	log.Printf("Fetching %s", r.Url)
-	body, err := fetcher.Fetch(r.Url)
-	if err != nil {
-		log.Printf("Fetcher: error fetching url %s: %v", r.Url, err)
-		return ParseResult{}, err
+var visitedUrls = make(map[string]bool)
+
+func isDuplicate(url string) bool {
+	if visitedUrls[url] {
+		return true
 	}
-	return r.ParserFunc(body), nil
+	visitedUrls[url] = true
+	return false
 }
