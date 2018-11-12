@@ -17,7 +17,7 @@ func TestParseProfile(t *testing.T) {
 	}
 	url := "http://album.zhenai.com/u/91162834"
 
-	result := ParseProfile(contents, url, "蜗牛漫步")
+	result := parseProfile(contents, url, "蜗牛漫步")
 
 	if len(result.Items) != 1 {
 		t.Errorf("Items should contain 1 "+"element; but was %v", result.Items)

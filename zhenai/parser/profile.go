@@ -24,7 +24,7 @@ var (
 	idUrlRe = regexp.MustCompile(`http://album.zhenai.com/u/([\d]+)`)
 )
 
-func ParseProfile(contents []byte, url, name string) engine.ParseResult {
+func parseProfile(contents []byte, url, name string) engine.ParseResult {
 	profile := model.Profile{}
 
 	//	profile.Name = extractString(contents, nameRe)
